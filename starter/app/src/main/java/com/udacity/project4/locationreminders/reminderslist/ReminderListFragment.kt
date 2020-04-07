@@ -3,6 +3,7 @@ package com.udacity.project4.locationreminders.reminderslist
 import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
+import com.firebase.ui.auth.AuthUI
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
@@ -69,9 +70,25 @@ class ReminderListFragment : BaseFragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val signoutSuccess = getString(R.string.sign_out)
+        val signOutFailure = getString(R.string.sign_out_failed)
+        val activity = activity!!
         when (item.itemId) {
             R.id.logout -> {
 //                TODO: add the logout implementation
+                AuthUI.getInstance()
+                    .signOut(requireContext())
+                    .addOnCompleteListener {
+                        if (it.isSuccessful)
+                        {
+                            _viewModel.showToast.postValue(signoutSuccess)
+                            activity.finish()
+
+                        } else {
+                            _viewModel.showErrorMessage.postValue(signOutFailure)
+                            return@addOnCompleteListener
+                        }
+                    }
             }
         }
         return super.onOptionsItemSelected(item)

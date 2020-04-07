@@ -1,6 +1,7 @@
 package com.udacity.project4.utils
 
 import android.view.View
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
@@ -43,5 +44,10 @@ object BindingAdapters {
                     view.fadeOut()
             }
         }
+    }
+    @BindingAdapter("android:double")
+    @JvmStatic
+    fun setDouble(textView: TextView,double: Double?){
+        textView.text = "$double"
     }
 }
