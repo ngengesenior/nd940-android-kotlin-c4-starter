@@ -27,8 +27,15 @@ android {
         jvmTarget = "1.8"
     }
     testOptions.unitTests {
+        /*all {
+            //force robolectric to use sdk 21
+            systemProperty 'robolectric.enabledSdks', '21'
+
+        }*/
+
         includeAndroidResources = true
         returnDefaultValues = true
+
     }
 
     dataBinding {

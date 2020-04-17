@@ -1,16 +1,30 @@
 package com.udacity.project4
 
 import android.app.Application
+import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.pressBack
+import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.ReminderDataSource
+import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.local.LocalDB
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
+import com.udacity.project4.util.DataBindingIdlingResource
+import com.udacity.project4.util.monitorActivity
+import com.udacity.project4.utils.EspressoIdlingResource
 import kotlinx.coroutines.runBlocking
+import org.junit.After
 import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
@@ -27,6 +41,7 @@ class RemindersActivityTest :
 
     private lateinit var repository: ReminderDataSource
     private lateinit var appContext: Application
+    private val dataBindingIdlingResource = DataBindingIdlingResource()
 
     /**
      * As we use Koin as a Service Locator Library to develop our code, we'll also use Koin to test our code.
@@ -67,5 +82,51 @@ class RemindersActivityTest :
 
 
 //    TODO: add End to End testing to the app
+
+    @Before
+    fun registerIdlingResources(){
+        IdlingRegistry.getInstance().register(dataBindingIdlingResource)
+        IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
+    }
+
+    @After
+    fun unregisterIdlingResources() {
+        IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
+    }
+
+
+    @Test
+    fun testRemindersActivityReminders() = runBlocking{
+
+        val reminder = ReminderDTO(
+            title = "title", description = "Description",
+            location = "Location",
+            latitude = 12.0, longitude = 13.0
+
+        )
+        repository.saveReminder(reminder)
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+        onView(withText("title")).check(matches(isDisplayed()))
+        onView(withText("Description")).check(matches(isDisplayed()))
+        onView(withText("Location")).check(matches(isDisplayed()))
+        activityScenario.close()
+
+    }
+
+    @Test
+    fun testNavigateToAddScreen() {
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+        onView(withId(R.id.reminderssRecyclerView)).check(matches(isDisplayed()))
+        onView(withId(R.id.addReminderFAB)).perform(click())
+        onView(withId(R.id.saveReminder)).check(matches(isDisplayed()))
+        pressBack()
+        onView(withId(R.id.reminderssRecyclerView)).check(matches(isDisplayed()))
+
+        activityScenario.close()
+
+    }
 
 }

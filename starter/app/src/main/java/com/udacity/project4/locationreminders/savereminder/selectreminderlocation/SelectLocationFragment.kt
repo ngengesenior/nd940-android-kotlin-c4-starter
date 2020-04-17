@@ -3,6 +3,7 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 import android.Manifest
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
@@ -12,6 +13,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -32,6 +34,7 @@ import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
+import java.text.DecimalFormat
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
@@ -87,6 +90,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                         MarkerOptions().position(latLong)
                             .title("Your location")
                     )
+
+
                 } else {
                     _viewModel.showErrorMessage.postValue("Location is null")
                 }
@@ -100,6 +105,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         //        TODO: call this function after the user confirms on the selected location
         onLocationSelected()
+        selectArbitraryLocation()
         setMapStyle(map)
 
 
@@ -110,7 +116,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         //         send back the selected location details to the view model
         //         and navigate back to the previous fragment to save the reminder and add the geofence
         map.setOnPoiClickListener { poi ->
-            _viewModel.showErrorMessage.postValue("Point of interest selected")
+            _viewModel.showToast.postValue("Point of interest selected")
             _viewModel.selectedPOI.postValue(poi)
             _viewModel.latitude.postValue(poi.latLng.latitude)
             _viewModel.longitude.postValue(poi.latLng.longitude)
@@ -118,6 +124,40 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             _viewModel.navigationCommand.postValue(
                 NavigationCommand.Back
             )
+
+        }
+    }
+
+    /**
+     * Selects any point on map
+     */
+    private fun selectArbitraryLocation() {
+        map.setOnMapClickListener {
+
+            map.addMarker(MarkerOptions().position(it))
+            _viewModel.latitude.postValue(it.latitude)
+            _viewModel.longitude.postValue(it.longitude)
+
+            AlertDialog.Builder(requireContext())
+                .setTitle("Selected location")
+                .setMessage("Save location with latitude and longitude ${it.latitude} and ${it.longitude} respectively?")
+                .setPositiveButton(
+                    "Yes"
+                ) { _, _ ->
+                    _viewModel.reminderSelectedLocationStr.postValue(
+                        setLocationNameWithLatitudeAndLongitude(
+                            it
+                        )
+                    )
+                    _viewModel.navigationCommand.postValue(
+                        NavigationCommand.Back
+                    )
+                }
+                .setNegativeButton("No"
+                ) { dialog, _ ->
+                    dialog.dismiss()
+                }.show()
+
 
         }
     }
@@ -199,6 +239,13 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
 
     }
+
+
+    private fun setLocationNameWithLatitudeAndLongitude(latLng: LatLng):String{
+        val df = DecimalFormat("#.###")
+        return "LatLng(${df.format(latLng.latitude)},${df.format(latLng.longitude)})"
+    }
+
 
 
     private fun checkDeviceLocation(resolve: Boolean = true) {
