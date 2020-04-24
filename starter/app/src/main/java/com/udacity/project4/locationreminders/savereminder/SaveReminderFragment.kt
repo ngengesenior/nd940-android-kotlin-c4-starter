@@ -61,24 +61,24 @@ class SaveReminderFragment : BaseFragment() {
         }
 
         binding.saveReminder.setOnClickListener {
-
             val title = _viewModel.reminderTitle.value
             val description = _viewModel.reminderDescription.value
             val location = _viewModel.reminderSelectedLocationStr.value
             val latitude = _viewModel.latitude.value
             val longitude = _viewModel.longitude.value
 
-
+            val reminderDataItem = ReminderDataItem(
+                title,description,location,latitude,longitude
+            )
+            // Validate that the reminder is valid
+            if (!_viewModel.validateEnteredData(reminderDataItem)) return@setOnClickListener
+            _viewModel.validateAndSaveReminder(
+                reminderDataItem
+            )
 
             latitude?.let {
-                addGeoFence(it,longitude!!)
+                addGeoFence(it,longitude!!,reminderDataItem.id)
             }
-
-            _viewModel.validateAndSaveReminder(
-                ReminderDataItem(
-                    title,description,location,latitude,longitude
-                )
-            )
             //_viewModel.navigationCommand.postValue(NavigationCommand.Back)
 
 
@@ -95,11 +95,11 @@ class SaveReminderFragment : BaseFragment() {
         _viewModel.onClear()
     }
 
-    private fun addGeoFence(latitude:Double,longitude:Double) {
+    private fun addGeoFence(latitude:Double,longitude:Double,reminderId:String) {
         val geoFenceAddedMessage = getString(R.string.geofence_added)
         val geofenceAddedFailed = getString(R.string.error_adding_geofence)
         val geofence = Geofence.Builder()
-            .setRequestId(UUID.randomUUID().toString())
+            .setRequestId(reminderId)
             .setCircularRegion(latitude,
                 longitude,
                 GEOFENCE_RADIUS_IN_METERS

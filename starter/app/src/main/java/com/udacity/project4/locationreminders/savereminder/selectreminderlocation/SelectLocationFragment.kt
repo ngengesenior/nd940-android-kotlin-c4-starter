@@ -134,6 +134,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private fun selectArbitraryLocation() {
         map.setOnMapClickListener {
 
+            val cameraUpdate = CameraUpdateFactory.newLatLngZoom(it, DEFAULT_ZOOM)
+            map.moveCamera(cameraUpdate)
             map.addMarker(MarkerOptions().position(it))
             _viewModel.latitude.postValue(it.latitude)
             _viewModel.longitude.postValue(it.longitude)
@@ -247,48 +249,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
 
-
-    private fun checkDeviceLocation(resolve: Boolean = true) {
-        locationRequest = LocationRequest.create().apply {
-            priority = LocationRequest.PRIORITY_LOW_POWER
-        }
-        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-        val settingsClient = LocationServices.getSettingsClient(requireActivity())
-        val locationSettingsResponseTask = settingsClient.checkLocationSettings(builder.build())
-        locationSettingsResponseTask.addOnFailureListener { exception ->
-
-            if (exception is ResolvableApiException && resolve) {
-                try {
-
-                    exception.startResolutionForResult(
-                        requireActivity(),
-                        LOCATION_PERMISSION_REQUEST
-                    )
-                } catch (sendEx: IntentSender.SendIntentException) {
-                    _viewModel.showErrorMessage.postValue("Error getting location settings client ${sendEx.message}")
-                }
-
-            } else {
-                Snackbar.make(
-                        binding.rootLayout,
-                        "Device location is required",
-                        Snackbar.LENGTH_INDEFINITE
-                    )
-                    .setAction(android.R.string.ok) {
-                        checkDeviceLocation()
-                    }.show()
-            }
-
-
-        }
-
-        locationSettingsResponseTask.addOnCompleteListener {
-            if (it.isSuccessful) {
-
-
-            }
-        }
-    }
 
 
 }

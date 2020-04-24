@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:padding="8dp"
         tools:context=".locationreminders.ReminderDescriptionActivity">
         <!--TODO: add the design of the reminder details-->
 
@@ -20,23 +21,28 @@
         <TextView
             android:id="@+id/textViewTitle"
             android:layout_width="match_parent"
-            android:text="@{reminderDataItem.title"
+            android:text="@{reminderDataItem.title}"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:layout_height="wrap_content"
             tools:text="Title" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/dp_8">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/latitude"/>
+                android:text="@string/latitude"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
             <TextView
                 android:layout_width="wrap_content"
-                tools:text="14.0"
+                android:layout_height="wrap_content"
                 android:double="@{reminderDataItem.latitude}"
-                android:layout_height="wrap_content"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                tools:text="14.0" />
         </LinearLayout>
 
 
@@ -44,15 +50,19 @@
             android:layout_width="match_parent"
             android:layout_marginTop="@dimen/dp_8"
             android:layout_height="wrap_content">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/longitude"/>
+                android:text="@string/longitude"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
             <TextView
                 android:layout_width="wrap_content"
-                tools:text="14.0"
+                android:layout_height="wrap_content"
                 android:double="@{reminderDataItem.latitude}"
-                android:layout_height="wrap_content"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                tools:text="14.0" />
         </LinearLayout>
 
 
@@ -60,23 +70,29 @@
             android:layout_width="match_parent"
             android:layout_marginTop="@dimen/dp_8"
             android:layout_height="wrap_content">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/reminder_location"/>
+                android:text="@string/reminder_location"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
             <TextView
                 android:layout_width="wrap_content"
-                tools:text="14.0"
+                android:layout_height="wrap_content"
                 android:text="@{reminderDataItem.location}"
-                android:layout_height="wrap_content"/>
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                tools:text="14.0" />
         </LinearLayout>
 
         <TextView
+            android:id="@+id/textViewDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            tools:text="The description is totally Okay"
-            android:id="@+id/textViewDescription"/>
+            android:text="@{reminderDataItem.description}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            tools:text="The description is totally Okay" />
 
 
 

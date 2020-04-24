@@ -59,19 +59,6 @@ class RemindersListViewModelTest {
 
     }
 
-    @Test
-    fun testRemindersEmpty() = runBlockingTest {
-        reminderListViewModel.loadReminders()
-        val remindersList = reminderListViewModel.remindersList.getOrAwaitValue()
-        assertThat(remindersList.isEmpty(), `is`(false))
-        fakeDataSource.deleteAllReminders()
-        reminderListViewModel.loadReminders()
-        val noRemindersMessage = reminderListViewModel.showSnackBar.getOrAwaitValue()
-        //assertEquals(noRemindersMessage, "No reminders found")
-        assertThat(noRemindersMessage, `is`("No reminders found"))
-
-
-    }
 
 
     @Test
@@ -92,6 +79,22 @@ class RemindersListViewModelTest {
         val showLoadingValueAgain = reminderListViewModel.showLoading.getOrAwaitValue()
         assertThat(showLoadingValueAgain, `is`(false))
     }
+
+    @Test
+    fun shouldReturnError() = runBlockingTest {
+        reminderListViewModel.loadReminders()
+        val remindersList = reminderListViewModel.remindersList.getOrAwaitValue()
+        assertThat(remindersList.isEmpty(), `is`(false))
+        fakeDataSource.deleteAllReminders()
+        reminderListViewModel.loadReminders()
+        val noRemindersMessage = reminderListViewModel.showSnackBar.getOrAwaitValue()
+        //assertEquals(noRemindersMessage, "No reminders found")
+        assertThat(noRemindersMessage, `is`("No reminders found"))
+
+
+    }
+
+
 
 
 }
